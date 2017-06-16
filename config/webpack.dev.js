@@ -3,12 +3,27 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers');
 
+const devSystem = "http://encsapdejci.ee.intern:8010";
+
+const WriteFilePlugin = require('write-file-webpack-plugin');
+
 module.exports = webpackMerge(commonConfig, {
-  devtool: 'cheap-module-eval-source-map',
  
+  devtool: 'source-map',
+
   devServer: {
     historyApiFallback: true,
-    stats: 'minimal'
+    stats: 'minimal',
+    proxy: {
+          "/proxy": {
+            target: devSystem,
+            changeOrigin: true,
+            secure: false,
+            pathRewrite: {
+              "^/proxy": ""
+            }
+          }
+        }
   },
 
   output: {
@@ -19,7 +34,8 @@ module.exports = webpackMerge(commonConfig, {
   },
 
   plugins: [
-    new ExtractTextPlugin('[name].css')
+    new ExtractTextPlugin('[name].css'),
+    new WriteFilePlugin()
   ]
  
 });
